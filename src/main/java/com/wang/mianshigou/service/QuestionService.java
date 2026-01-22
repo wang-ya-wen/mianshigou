@@ -3,9 +3,9 @@ package com.wang.mianshigou.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wang.mianshiya.model.dto.Question.QuestionQueryRequest;
-import com.wang.mianshiya.model.entity.Question;
-import com.wang.mianshiya.model.vo.QuestionVO;
+import com.wang.mianshigou.model.dto.question.QuestionQueryRequest;
+import com.wang.mianshigou.model.entity.Question;
+import com.wang.mianshigou.model.vo.QuestionVO;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,10 +26,10 @@ void validQuestion(Question Question, boolean add);
 /**
 * 获取查询条件
 *
-* @param QuestionQueryRequest
+ * @param questionQueryRequest
 * @return
 */
-QueryWrapper<Question> getQueryWrapper(QuestionQueryRequest QuestionQueryRequest);
+QueryWrapper<Question> getQueryWrapper(QuestionQueryRequest questionQueryRequest);
 
 /**
 * 获取题目封装

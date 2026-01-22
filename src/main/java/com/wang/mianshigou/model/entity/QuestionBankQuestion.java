@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -23,6 +25,10 @@ public class QuestionBankQuestion {
      * 题库 id
      */
     private Long questionBankId;
+    /**
+     * 标题
+     */
+    private String title;
 
     /**
      * 题目 id
@@ -43,6 +49,27 @@ public class QuestionBankQuestion {
      * 更新时间
      */
     private Date updateTime;
+
+    /**
+     * 标签
+     */
+    private List<String> tags;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
 
     public Long getId() {
         return id;

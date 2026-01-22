@@ -1,4 +1,4 @@
-package com.wang.mianshigou.model.dto.question;
+package com.wang.mianshigou.model.dto.questionBank;
 
 import com.wang.mianshigou.common.PageRequest;
 import lombok.Data;
@@ -8,12 +8,12 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
-* 查询题目请求
+* 查询题库请求
 
 */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class QuestionQueryRequest extends PageRequest implements Serializable {
+public class QuestionBankQueryRequest extends PageRequest implements Serializable {
 
 /**
 * id
@@ -39,6 +39,15 @@ private String title;
 * 内容
 */
 private String content;
+    /**
+     * 描述
+     */
+    private String description;
+
+    /**
+     * 图片
+     */
+    private String picture;
 
 /**
 * 标签列表
@@ -51,10 +60,6 @@ private List<String> tags;
     private Long userId;
 
     private static final long serialVersionUID = 1L;
-    /**
-     * 推荐答案
-     */
-    private String answer;
 
     public Long getId() {
         return id;
@@ -64,17 +69,11 @@ private List<String> tags;
         this.id = id;
     }
 
-    public Long getNotId() {
-        return notId;
-    }
 
     public void setNotId(Long notId) {
         this.notId = notId;
     }
 
-    public String getSearchText() {
-        return searchText;
-    }
 
     public void setSearchText(String searchText) {
         this.searchText = searchText;
@@ -112,11 +111,27 @@ private List<String> tags;
         this.userId = userId;
     }
 
-    public String getAnswer() {
-        return answer;
+    public Long getNotId() {
+        return notId;
     }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }

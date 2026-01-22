@@ -1,4 +1,4 @@
-package com.wang.mianshigou.model.dto.question;
+package com.wang.mianshigou.model.dto.questionBank;
 
 import lombok.Data;
 
@@ -6,11 +6,11 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
-* 更新题目请求
+* 更新题库请求
 
 */
 @Data
-public class QuestionUpdateRequest implements Serializable {
+public class QuestionBankUpdateRequest implements Serializable {
 
 /**
 * id
@@ -26,15 +26,20 @@ private String title;
 * 内容
 */
 private String content;
+    /**
+     * 描述
+     */
+    private String description;
+
+    /**
+     * 图片
+     */
+    private String picture;
 
 /**
 * 标签列表
 */
 private List<String> tags;
-    /**
-     * 推荐答案
-     */
-    private String answer;
 
     private static final long serialVersionUID = 1L;
 
@@ -70,11 +75,19 @@ private List<String> tags;
         this.tags = tags;
     }
 
-    public String getAnswer() {
-        return answer;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }

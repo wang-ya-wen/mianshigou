@@ -3,10 +3,9 @@ package com.wang.mianshigou.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wang.mianshiya.model.dto.QuestionBank.QuestionBankQueryRequest;
-import com.wang.mianshiya.model.entity.QuestionBank;
-import com.wang.mianshiya.model.vo.QuestionBankVO;
-
+import com.wang.mianshigou.model.entity.QuestionBank;
+import com.wang.mianshigou.model.vo.QuestionBankVO;
+import com.wang.mianshigou.model.dto.questionBank.QuestionBankQueryRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -26,26 +25,26 @@ void validQuestionBank(QuestionBank QuestionBank, boolean add);
 /**
 * 获取查询条件
 *
-* @param QuestionBankQueryRequest
+ * @param questionBankQueryRequest
 * @return
 */
-QueryWrapper<QuestionBank> getQueryWrapper(QuestionBankQueryRequest QuestionBankQueryRequest);
+QueryWrapper<QuestionBank> getQueryWrapper(QuestionBankQueryRequest questionBankQueryRequest);
 
 /**
 * 获取题库封装
 *
-* @param QuestionBank
+ * @param questionBank
 * @param request
 * @return
 */
-QuestionBankVO getQuestionBankVO(QuestionBank QuestionBank, HttpServletRequest request);
+QuestionBankVO getQuestionBankVO(QuestionBank questionBank, HttpServletRequest request);
 
 /**
 * 分页获取题库封装
 *
-* @param QuestionBankPage
+ * @param questionBankPage
 * @param request
 * @return
 */
-Page<QuestionBankVO> getQuestionBankVOPage(Page<QuestionBank> QuestionBankPage, HttpServletRequest request);
+Page<QuestionBankVO> getQuestionBankVOPage(Page<QuestionBank> questionBankPage, HttpServletRequest request);
     }

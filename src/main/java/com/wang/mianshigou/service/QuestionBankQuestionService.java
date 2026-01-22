@@ -3,9 +3,9 @@ package com.wang.mianshigou.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wang.mianshiya.model.dto.QuestionBankQuestion.QuestionBankQuestionQueryRequest;
-import com.wang.mianshiya.model.entity.QuestionBankQuestion;
-import com.wang.mianshiya.model.vo.QuestionBankQuestionVO;
+import com.wang.mianshigou.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
+import com.wang.mianshigou.model.entity.QuestionBankQuestion;
+import com.wang.mianshigou.model.vo.QuestionBankQuestionVO;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,10 +26,10 @@ void validQuestionBankQuestion(QuestionBankQuestion QuestionBankQuestion, boolea
 /**
 * 获取查询条件
 *
-* @param QuestionBankQuestionQueryRequest
+ * @param questionBankQuestionQueryRequest
 * @return
 */
-QueryWrapper<QuestionBankQuestion> getQueryWrapper(QuestionBankQuestionQueryRequest QuestionBankQuestionQueryRequest);
+QueryWrapper<QuestionBankQuestion> getQueryWrapper(QuestionBankQuestionQueryRequest questionBankQuestionQueryRequest);
 
 /**
 * 获取题库题目关联封装

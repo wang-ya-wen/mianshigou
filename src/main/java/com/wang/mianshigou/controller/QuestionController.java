@@ -1,23 +1,23 @@
 package com.wang.mianshigou.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.wang.mianshiya.annotation.AuthCheck;
-import com.wang.mianshiya.common.BaseResponse;
-import com.wang.mianshiya.common.DeleteRequest;
-import com.wang.mianshiya.common.ErrorCode;
-import com.wang.mianshiya.common.ResultUtils;
-import com.wang.mianshiya.constant.UserConstant;
-import com.wang.mianshiya.exception.BusinessException;
-import com.wang.mianshiya.exception.ThrowUtils;
-import com.wang.mianshiya.model.dto.Question.QuestionAddRequest;
-import com.wang.mianshiya.model.dto.Question.QuestionEditRequest;
-import com.wang.mianshiya.model.dto.Question.QuestionQueryRequest;
-import com.wang.mianshiya.model.dto.Question.QuestionUpdateRequest;
-import com.wang.mianshiya.model.entity.Question;
-import com.wang.mianshiya.model.entity.User;
-import com.wang.mianshiya.model.vo.QuestionVO;
-import com.wang.mianshiya.service.QuestionService;
-import com.wang.mianshiya.service.UserService;
+import com.wang.mianshigou.annotation.AuthCheck;
+import com.wang.mianshigou.common.BaseResponse;
+import com.wang.mianshigou.common.DeleteRequest;
+import com.wang.mianshigou.common.ErrorCode;
+import com.wang.mianshigou.common.ResultUtils;
+import com.wang.mianshigou.constant.UserConstant;
+import com.wang.mianshigou.exception.BusinessException;
+import com.wang.mianshigou.exception.ThrowUtils;
+import com.wang.mianshigou.model.dto.question.QuestionAddRequest;
+import com.wang.mianshigou.model.dto.question.QuestionEditRequest;
+import com.wang.mianshigou.model.dto.question.QuestionQueryRequest;
+import com.wang.mianshigou.model.dto.question.QuestionUpdateRequest;
+import com.wang.mianshigou.model.entity.Question;
+import com.wang.mianshigou.model.entity.User;
+import com.wang.mianshigou.model.vo.QuestionVO;
+import com.wang.mianshigou.service.QuestionService;
+import com.wang.mianshigou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 public class QuestionController {
 
 @Resource
-private QuestionService QuestionService;
+private QuestionService questionService;
 
 @Resource
 private UserService userService;
@@ -45,26 +45,27 @@ private UserService userService;
 /**
 * 创建题目
 *
-* @param QuestionAddRequest
+ * @param questionAddRequest
 * @param request
 * @return
 */
 @PostMapping("/add")
-public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest QuestionAddRequest, HttpServletRequest request) {
-    ThrowUtils.throwIf(QuestionAddRequest == null, ErrorCode.PARAMS_ERROR);
+@AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest questionAddRequest, HttpServletRequest request) {
+    ThrowUtils.throwIf(questionAddRequest == null, ErrorCode.PARAMS_ERROR);
     // todo 在此处将实体类和 DTO 进行转换
-    Question Question = new Question();
-    BeanUtils.copyProperties(QuestionAddRequest, Question);
+    Question question = new Question();
+    BeanUtils.copyProperties(questionAddRequest, question);
     // 数据校验
-    QuestionService.validQuestion(Question, true);
+    questionService.validQuestion(question, true);
     // todo 填充默认值
     User loginUser = userService.getLoginUser(request);
-    Question.setUserId(loginUser.getId());
+    question.setUserId(loginUser.getId());
     // 写入数据库
-    boolean result = QuestionService.save(Question);
+    boolean result = questionService.save(question);
     ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
     // 返回新写入的数据 id
-    long newQuestionId = Question.getId();
+    long newQuestionId = question.getId();
     return ResultUtils.success(newQuestionId);
     }
 
@@ -76,6 +77,8 @@ public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest QuestionAd
     * @return
     */
     @PostMapping("/delete")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+
     public BaseResponse<Boolean> deleteQuestion(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
         throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -83,14 +86,14 @@ public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest QuestionAd
         User user = userService.getLoginUser(request);
         long id = deleteRequest.getId();
         // 判断是否存在
-        Question oldQuestion = QuestionService.getById(id);
+        Question oldQuestion = questionService.getById(id);
         ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可删除
         if (!oldQuestion.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
         throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         // 操作数据库
-        boolean result = QuestionService.removeById(id);
+        boolean result = questionService.removeById(id);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
         }
@@ -111,13 +114,13 @@ public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest QuestionAd
             Question Question = new Question();
             BeanUtils.copyProperties(QuestionUpdateRequest, Question);
             // 数据校验
-            QuestionService.validQuestion(Question, false);
+            questionService.validQuestion(Question, false);
             // 判断是否存在
             long id = QuestionUpdateRequest.getId();
-            Question oldQuestion = QuestionService.getById(id);
+            Question oldQuestion = questionService.getById(id);
             ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
             // 操作数据库
-            boolean result = QuestionService.updateById(Question);
+            boolean result = questionService.updateById(Question);
             ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
             return ResultUtils.success(true);
             }
@@ -132,103 +135,108 @@ public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest QuestionAd
             public BaseResponse<QuestionVO> getQuestionVOById(long id, HttpServletRequest request) {
                 ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
                 // 查询数据库
-                Question Question = QuestionService.getById(id);
+                Question Question = questionService.getById(id);
                 ThrowUtils.throwIf(Question == null, ErrorCode.NOT_FOUND_ERROR);
                 // 获取封装类
-                return ResultUtils.success(QuestionService.getQuestionVO(Question, request));
+                return ResultUtils.success(questionService.getQuestionVO(Question, request));
                 }
 
                 /**
                 * 分页获取题目列表（仅管理员可用）
                 *
-                * @param QuestionQueryRequest
+                 * @param questionQueryRequest
                 * @return
                 */
                 @PostMapping("/list/page")
-                @SaCheckRole(UserConstant.ADMIN_ROLE)
-                public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest QuestionQueryRequest) {
-                long current = QuestionQueryRequest.getCurrent();
-                long size = QuestionQueryRequest.getPageSize();
+
+
+                public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
+                    long current = questionQueryRequest.getCurrent();
+                    long size = questionQueryRequest.getPageSize();
                 // 查询数据库
-                Page<Question> QuestionPage = QuestionService.page(new Page<>(current, size),
-                QuestionService.getQueryWrapper(QuestionQueryRequest));
-                return ResultUtils.success(QuestionPage);
+                    Page<Question> questionPage = questionService.page(new Page<>(current, size),
+                            questionService.getQueryWrapper(questionQueryRequest));
+                    return ResultUtils.success(questionPage);
                 }
 
                 /**
                 * 分页获取题目列表（封装类）
                 *
-                * @param QuestionQueryRequest
+                 * @param questionQueryRequest
                 * @param request
                 * @return
                 */
                 @PostMapping("/list/page/vo")
-                public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest QuestionQueryRequest,
+                public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
                     HttpServletRequest request) {
-                    long current = QuestionQueryRequest.getCurrent();
-                    long size = QuestionQueryRequest.getPageSize();
+                    long current = questionQueryRequest.getCurrent();
+                    long size = questionQueryRequest.getPageSize();
                     // 限制爬虫
                     ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
                     // 查询数据库
-                    Page<Question> QuestionPage = QuestionService.page(new Page<>(current, size),
-                    QuestionService.getQueryWrapper(QuestionQueryRequest));
+                    Page<Question> questionPage = questionService.page(new Page<>(current, size),
+                            questionService.getQueryWrapper(questionQueryRequest));
                     // 获取封装类
-                    return ResultUtils.success(QuestionService.getQuestionVOPage(QuestionPage, request));
+                    return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
                     }
 
                     /**
                     * 分页获取当前登录用户创建的题目列表
                     *
-                    * @param QuestionQueryRequest
+                     * @param questionQueryRequest
                     * @param request
                     * @return
                     */
                     @PostMapping("/my/list/page/vo")
-                    public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest QuestionQueryRequest,
+
+
+                    public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
                         HttpServletRequest request) {
-                        ThrowUtils.throwIf(QuestionQueryRequest == null, ErrorCode.PARAMS_ERROR);
+                        ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
                         // 补充查询条件，只查询当前登录用户的数据
                         User loginUser = userService.getLoginUser(request);
-                        QuestionQueryRequest.setUserId(loginUser.getId());
-                        long current = QuestionQueryRequest.getCurrent();
-                        long size = QuestionQueryRequest.getPageSize();
+                        questionQueryRequest.setUserId(loginUser.getId());
+                        long current = questionQueryRequest.getCurrent();
+                        long size = questionQueryRequest.getPageSize();
                         // 限制爬虫
                         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
                         // 查询数据库
-                        Page<Question> QuestionPage = QuestionService.page(new Page<>(current, size),
-                        QuestionService.getQueryWrapper(QuestionQueryRequest));
+                        Page<Question> questionPage = questionService.page(new Page<>(current, size),
+                                questionService.getQueryWrapper(questionQueryRequest));
                         // 获取封装类
-                        return ResultUtils.success(QuestionService.getQuestionVOPage(QuestionPage, request));
+                        return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
                         }
 
                         /**
                         * 编辑题目（给用户使用）
                         *
-                        * @param QuestionEditRequest
+                         * @param questionEditRequest
                         * @param request
                         * @return
                         */
                         @PostMapping("/edit")
-                        public BaseResponse<Boolean> editQuestion(@RequestBody QuestionEditRequest QuestionEditRequest, HttpServletRequest request) {
-                            if (QuestionEditRequest == null || QuestionEditRequest.getId() <= 0) {
+                        @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+
+                        public BaseResponse<Boolean> editQuestion(@RequestBody QuestionEditRequest questionEditRequest, HttpServletRequest request) {
+                            if (questionEditRequest == null || questionEditRequest.getId() <= 0) {
                             throw new BusinessException(ErrorCode.PARAMS_ERROR);
                             }
                             // todo 在此处将实体类和 DTO 进行转换
-                            Question Question = new Question();
-                            BeanUtils.copyProperties(QuestionEditRequest, Question);
+                            Question question = new Question();
+                            BeanUtils.copyProperties(questionEditRequest, question);
                             // 数据校验
-                            QuestionService.validQuestion(Question, false);
+                            questionService.validQuestion(question, false);
                             User loginUser = userService.getLoginUser(request);
                             // 判断是否存在
-                            long id = QuestionEditRequest.getId();
-                            Question oldQuestion = QuestionService.getById(id);
+                            long id = questionEditRequest.getId();
+                            Question oldQuestion = questionService.getById(id);
                             ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
                             // 仅本人或管理员可编辑
                             if (!oldQuestion.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
                             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
                             }
                             // 操作数据库
-                            boolean result = QuestionService.updateById(Question);
+                            boolean result = questionService.updateById(question);
                             ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
                             return ResultUtils.success(true);
                             }
