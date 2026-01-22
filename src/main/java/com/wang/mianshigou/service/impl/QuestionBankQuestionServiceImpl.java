@@ -6,28 +6,31 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wang.mianshigou.common.ErrorCode;
 import com.wang.mianshigou.constant.CommonConstant;
+import com.wang.mianshigou.exception.BusinessException;
 import com.wang.mianshigou.exception.ThrowUtils;
 import com.wang.mianshigou.mapper.QuestionBankQuestionMapper;
 import com.wang.mianshigou.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
+import com.wang.mianshigou.model.entity.Question;
+import com.wang.mianshigou.model.entity.QuestionBank;
 import com.wang.mianshigou.model.entity.QuestionBankQuestion;
 
 import com.wang.mianshigou.model.entity.User;
 import com.wang.mianshigou.model.vo.QuestionBankQuestionVO;
 import com.wang.mianshigou.model.vo.UserVO;
 import com.wang.mianshigou.service.QuestionBankQuestionService;
+import com.wang.mianshigou.service.QuestionBankService;
+import com.wang.mianshigou.service.QuestionService;
 import com.wang.mianshigou.service.UserService;
 import com.wang.mianshigou.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.builder.BuilderException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +42,10 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
 
     @Resource
     private UserService userService;
+    @Resource
+    private QuestionService questionService;
+    @Resource
+    private QuestionBankService questionBankService;
 
     /**
      * 校验数据
@@ -48,6 +55,21 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
      */
     @Override
     public void validQuestionBankQuestion(QuestionBankQuestion questionBankQuestion, boolean add) {
+        ThrowUtils.throwIf(questionBankQuestion==null,ErrorCode.PARAMS_ERROR);
+        Long questionBankId = questionBankQuestion.getQuestionBankId();
+        Long questionId = questionBankQuestion.getQuestionId();
+        if(questionId!=null){
+            Question question = questionService.getById(questionId);
+            ThrowUtils.throwIf(question==null,ErrorCode.NOT_FOUND_ERROR,"题目不存在");
+        }
+        if(questionBankId!=null){
+            QuestionBank questionBank = questionBankService.getById(questionBankId);
+
+            ThrowUtils.throwIf(questionBank==null,ErrorCode.NOT_FOUND_ERROR,"题库不存在");
+        }
+
+
+
         //不需要校验
 //        ThrowUtils.throwIf(questionBankQuestion == null, ErrorCode.PARAMS_ERROR);
 //// todo 从对象中取值

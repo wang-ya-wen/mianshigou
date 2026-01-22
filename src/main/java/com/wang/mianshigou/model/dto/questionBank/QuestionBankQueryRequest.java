@@ -48,6 +48,10 @@ private String content;
      * 图片
      */
     private String picture;
+    /**
+     * 是否需要查询题目列表
+     */
+    private Boolean needQuestionList;
 
 /**
 * 标签列表
@@ -60,6 +64,14 @@ private List<String> tags;
     private Long userId;
 
     private static final long serialVersionUID = 1L;
+
+    public Boolean isNeedQuestionList() {
+        return needQuestionList;
+    }
+
+    public void setNeedQuestionList(Boolean needQuestionList) {
+        this.needQuestionList = needQuestionList;
+    }
 
     public Long getId() {
         return id;

@@ -24,7 +24,10 @@ private Long id;
 * id
 */
 private Long notId;
-
+    /**
+     * 题库id
+     */
+    private Long questionBankId;
 /**
 * 搜索词
 */
@@ -55,6 +58,14 @@ private List<String> tags;
      * 推荐答案
      */
     private String answer;
+
+    public Long getQuestionBankId() {
+        return questionBankId;
+    }
+
+    public void setQuestionBankId(Long questionBankId) {
+        this.questionBankId = questionBankId;
+    }
 
     public Long getId() {
         return id;

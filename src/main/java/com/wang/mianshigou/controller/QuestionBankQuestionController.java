@@ -1,5 +1,7 @@
 package com.wang.mianshigou.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wang.mianshigou.annotation.AuthCheck;
 import com.wang.mianshigou.common.BaseResponse;
@@ -11,6 +13,7 @@ import com.wang.mianshigou.exception.BusinessException;
 import com.wang.mianshigou.exception.ThrowUtils;
 import com.wang.mianshigou.model.dto.questionBankQuestion.QuestionBankQuestionAddRequest;
 import com.wang.mianshigou.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
+import com.wang.mianshigou.model.dto.questionBankQuestion.QuestionBankQuestionRemoveRequest;
 import com.wang.mianshigou.model.dto.questionBankQuestion.QuestionBankQuestionUpdateRequest;
 import com.wang.mianshigou.model.entity.QuestionBankQuestion;
 import com.wang.mianshigou.model.entity.User;
@@ -202,4 +205,26 @@ public BaseResponse<Long> addQuestionBankQuestion(@RequestBody QuestionBankQuest
 
 
     // endregion
-                            }
+
+    /**
+     * 移除题库题目关联
+     *
+     * @param questionBankQuestionRemoveRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/remove")
+    public BaseResponse<Boolean> removeQuestionBankQuestion(@RequestBody QuestionBankQuestionRemoveRequest questionBankQuestionRemoveRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(questionBankQuestionRemoveRequest == null, ErrorCode.PARAMS_ERROR);
+        User user = userService.getLoginUser(request);
+        Long questionBankId = questionBankQuestionRemoveRequest.getQuestionBankId();
+        Long questionId = questionBankQuestionRemoveRequest.getQuestionId();
+        LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                .eq(QuestionBankQuestion::getQuestionId, questionId)
+                .eq(QuestionBankQuestion::getQuestionBankId, questionBankId);
+        boolean remove = questionBankQuestionService.remove(lambdaQueryWrapper);
+
+        return ResultUtils.success(remove);
+    }
+
+}

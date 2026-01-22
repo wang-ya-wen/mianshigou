@@ -1,5 +1,9 @@
 package com.wang.mianshigou.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wang.mianshigou.annotation.AuthCheck;
 import com.wang.mianshigou.common.BaseResponse;
@@ -13,17 +17,22 @@ import com.wang.mianshigou.model.dto.question.QuestionAddRequest;
 import com.wang.mianshigou.model.dto.question.QuestionEditRequest;
 import com.wang.mianshigou.model.dto.question.QuestionQueryRequest;
 import com.wang.mianshigou.model.dto.question.QuestionUpdateRequest;
+import com.wang.mianshigou.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
 import com.wang.mianshigou.model.entity.Question;
+import com.wang.mianshigou.model.entity.QuestionBankQuestion;
 import com.wang.mianshigou.model.entity.User;
 import com.wang.mianshigou.model.vo.QuestionVO;
+import com.wang.mianshigou.service.QuestionBankQuestionService;
 import com.wang.mianshigou.service.QuestionService;
 import com.wang.mianshigou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * 题目接口
@@ -39,6 +48,8 @@ private QuestionService questionService;
 
 @Resource
 private UserService userService;
+    @Autowired
+    private QuestionBankQuestionService questionBankQuestionService;
 
 // region 增删改查
 
@@ -148,14 +159,10 @@ public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest questionAd
                 * @return
                 */
                 @PostMapping("/list/page")
-
-
+                @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
                 public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
-                    long current = questionQueryRequest.getCurrent();
-                    long size = questionQueryRequest.getPageSize();
-                // 查询数据库
-                    Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                            questionService.getQueryWrapper(questionQueryRequest));
+                    ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
+                    Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
                     return ResultUtils.success(questionPage);
                 }
 

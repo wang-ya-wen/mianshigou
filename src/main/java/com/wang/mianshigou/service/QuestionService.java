@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.wang.mianshigou.model.dto.question.QuestionQueryRequest;
 import com.wang.mianshigou.model.entity.Question;
 import com.wang.mianshigou.model.vo.QuestionVO;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,4 +49,12 @@ QuestionVO getQuestionVO(Question Question, HttpServletRequest request);
 * @return
 */
 Page<QuestionVO> getQuestionVOPage(Page<Question> QuestionPage, HttpServletRequest request);
-    }
+
+    /**
+     * 根据题库id查询题目列表
+     *
+     * @param questionQueryRequest
+     * @return
+     */
+    Page<Question> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest);
+}
