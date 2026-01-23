@@ -48,8 +48,7 @@ private QuestionService questionService;
 
 @Resource
 private UserService userService;
-    @Autowired
-    private QuestionBankQuestionService questionBankQuestionService;
+
 
 // region 增删改查
 

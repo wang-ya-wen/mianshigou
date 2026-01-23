@@ -1,5 +1,4 @@
 package com.wang.mianshigou.service.impl;
-
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -7,21 +6,17 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.wang.mianshigou.annotation.AuthCheck;
-import com.wang.mianshigou.common.BaseResponse;
 import com.wang.mianshigou.common.ErrorCode;
-import com.wang.mianshigou.common.ResultUtils;
 import com.wang.mianshigou.constant.CommonConstant;
-import com.wang.mianshigou.constant.UserConstant;
 import com.wang.mianshigou.exception.ThrowUtils;
 import com.wang.mianshigou.mapper.QuestionMapper;
 import com.wang.mianshigou.model.dto.question.QuestionQueryRequest;
 import com.wang.mianshigou.model.entity.Question;
-
 import com.wang.mianshigou.model.entity.QuestionBankQuestion;
 import com.wang.mianshigou.model.entity.User;
 import com.wang.mianshigou.model.vo.QuestionVO;
 import com.wang.mianshigou.model.vo.UserVO;
+import com.wang.mianshigou.service.QuestionBankQuestionService;
 import com.wang.mianshigou.service.QuestionService;
 import com.wang.mianshigou.service.UserService;
 import com.wang.mianshigou.utils.SqlUtils;
@@ -29,12 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +42,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Resource
     private UserService userService;
     @Resource
-    private QuestionBankQuestionServiceImpl questionBankQuestionService;
+    private QuestionBankQuestionService questionBankQuestionService;
     /**
      * 校验数据
      *
