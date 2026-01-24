@@ -1,4 +1,5 @@
 package com.wang.mianshigou.service.impl;
+
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -10,11 +11,9 @@ import com.wang.mianshigou.common.ErrorCode;
 import com.wang.mianshigou.constant.CommonConstant;
 import com.wang.mianshigou.exception.ThrowUtils;
 import com.wang.mianshigou.mapper.QuestionMapper;
-import com.wang.mianshigou.model.dto.post.PostEsDTO;
-import com.wang.mianshigou.model.dto.post.PostQueryRequest;
 import com.wang.mianshigou.model.dto.question.QuestionEsDTO;
 import com.wang.mianshigou.model.dto.question.QuestionQueryRequest;
-import com.wang.mianshigou.model.entity.Post;
+import com.wang.mianshigou.model.dto.question.QuestionBatchDeleteRequest;
 import com.wang.mianshigou.model.entity.Question;
 import com.wang.mianshigou.model.entity.QuestionBankQuestion;
 import com.wang.mianshigou.model.entity.User;
@@ -32,6 +31,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -39,7 +39,9 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     private QuestionBankQuestionService questionBankQuestionService;
     @Resource
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
+
     /**
      * 校验数据
      *
@@ -307,6 +310,25 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         }
         page.setRecords(resourceList);
         return page;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteQuestionByBatch(List<Long> questionIdList) {
+        //校验参数
+        ThrowUtils.throwIf(CollUtil.isEmpty(questionIdList), ErrorCode.PARAMS_ERROR);
+        for (Long questionId : questionIdList) {
+            boolean remove = this.removeById(questionId);
+            ThrowUtils.throwIf(!remove, ErrorCode.OPERATION_ERROR, "删除题目失败");
+            //移除题库题目关联关系
+            //构造查询
+            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                    .eq(QuestionBankQuestion::getQuestionId, questionId);
+            boolean removeById = questionBankQuestionService.remove(lambdaQueryWrapper);
+            ThrowUtils.throwIf(!removeById, ErrorCode.OPERATION_ERROR, "删除题库题目关联关系失败");
+
+        }
+
     }
 
 }
