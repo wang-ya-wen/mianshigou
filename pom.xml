@@ -108,6 +108,14 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        <!--hotkey-->
+        <dependency>
+            <groupId>com.jd.platform.hotkey</groupId>
+            <artifactId>hotkey-client</artifactId>
+            <version>0.0.4-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/hotkey-client-0.0.4-SNAPSHOT.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
