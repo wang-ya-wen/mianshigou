@@ -9,6 +9,7 @@ import com.wang.mianshigou.model.dto.questionBankQuestion.QuestionBankQuestionQu
 import com.wang.mianshigou.model.entity.QuestionBankQuestion;
 import com.wang.mianshigou.model.entity.User;
 import com.wang.mianshigou.model.vo.QuestionBankQuestionVO;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -68,4 +69,12 @@ public interface QuestionBankQuestionService extends IService<QuestionBankQuesti
      * @param questionBankId
      */
     void questionBankQuestionRemoveByBatch(List<Long> questionIdList, long questionBankId);
+
+    /**
+     * 批量添加题目到题库（事务，仅供内部使用）
+     *
+     * @param questionBankQuestions
+     */
+    @Transactional(rollbackFor = Exception.class)
+    void questionBankQuestionAddByBatchInner(List<QuestionBankQuestion> questionBankQuestions);
 }
