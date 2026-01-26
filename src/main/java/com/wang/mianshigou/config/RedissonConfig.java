@@ -5,6 +5,7 @@ import lombok.Data;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class RedissonConfig {
     private String host;
     private Integer port;
-
+    @Value("${spring.redis.database:0}")
     private Integer database;
 
     private String password;
